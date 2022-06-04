@@ -1,0 +1,56 @@
+<html>
+<head>
+<title>cyclistic_data_explore.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+cyclistic_data_explore.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">numpy </span><span class="s0">as </span><span class="s1">np</span>
+<span class="s0">import </span><span class="s1">pandas </span><span class="s0">as </span><span class="s1">pd</span>
+<span class="s0">import </span><span class="s1">cyclistic_data_cleaned </span><span class="s0">as </span><span class="s1">cd</span>
+
+<span class="s2">''' 
+I did all my cleaning in cyclistic_data_cleaned, then imported the file for data exploration. 
+'''</span>
+
+<span class="s1">df = cd.df</span>
+<span class="s1">pd.set_option(</span><span class="s2">'display.max_columns'</span><span class="s0">, None</span><span class="s1">)</span>
+
+<span class="s3"># Find ride count for each group</span>
+<span class="s1">df.groupby(</span><span class="s2">'member_casual'</span><span class="s1">)[</span><span class="s2">'ride_id'</span><span class="s1">].count()</span>
+
+<span class="s3"># Find average ride length for each group to nearest second</span>
+<span class="s1">round(df.groupby(</span><span class="s2">'member_casual'</span><span class="s1">)[</span><span class="s2">'ride_duration'</span><span class="s1">].mean())</span>
+
+<span class="s3"># Difference in ride lengths between casual riders and members by day of week</span>
+<span class="s1">round(df.groupby([</span><span class="s2">'member_casual'</span><span class="s0">, </span><span class="s2">'day_of_week'</span><span class="s1">])[</span><span class="s2">'ride_duration'</span><span class="s1">].mean())</span>
+
+<span class="s3"># Calculate how often people use service based on day of week</span>
+<span class="s1">round(df.groupby([</span><span class="s2">'member_casual'</span><span class="s0">, </span><span class="s2">'day_of_week'</span><span class="s1">])[</span><span class="s2">'ride_id'</span><span class="s1">].count())</span>
+
+<span class="s3"># Calculate ridership based on month</span>
+<span class="s1">round(df.groupby([</span><span class="s2">'member_casual'</span><span class="s0">, </span><span class="s2">'month'</span><span class="s1">])[</span><span class="s2">'ride_id'</span><span class="s1">].count())</span>
+
+<span class="s3"># Tracking ride count throughout the year</span>
+<span class="s1">df.groupby(</span><span class="s2">'date'</span><span class="s1">)[</span><span class="s2">'ride_id'</span><span class="s1">].count()</span>
+
+<span class="s3"># Selecting top 50 start and end stations from members</span>
+<span class="s1">df[df[</span><span class="s2">'member_casual'</span><span class="s1">] == </span><span class="s2">'member'</span><span class="s1">].groupby(</span><span class="s2">'start_station_name'</span><span class="s1">)[</span><span class="s2">'ride_id'</span><span class="s1">].count().sort_values(ascending=</span><span class="s0">False</span><span class="s1">).head(</span><span class="s4">50</span><span class="s1">)</span>
+<span class="s1">df[df[</span><span class="s2">'member_casual'</span><span class="s1">] == </span><span class="s2">'member'</span><span class="s1">].groupby(</span><span class="s2">'end_station_name'</span><span class="s1">)[</span><span class="s2">'ride_id'</span><span class="s1">].count().sort_values(ascending=</span><span class="s0">False</span><span class="s1">).head(</span><span class="s4">50</span><span class="s1">)</span>
+
+<span class="s3"># Selecting top 50 start and end stations from casual users</span>
+<span class="s1">df[df[</span><span class="s2">'member_casual'</span><span class="s1">] == </span><span class="s2">'casual'</span><span class="s1">].groupby(</span><span class="s2">'start_station_name'</span><span class="s1">)[</span><span class="s2">'ride_id'</span><span class="s1">].count().sort_values(ascending=</span><span class="s0">False</span><span class="s1">).head(</span><span class="s4">50</span><span class="s1">)</span>
+<span class="s1">df[df[</span><span class="s2">'member_casual'</span><span class="s1">] == </span><span class="s2">'casual'</span><span class="s1">].groupby(</span><span class="s2">'end_station_name'</span><span class="s1">)[</span><span class="s2">'ride_id'</span><span class="s1">].count().sort_values(ascending=</span><span class="s0">False</span><span class="s1">).head(</span><span class="s4">50</span><span class="s1">)</span></pre>
+</body>
+</html>

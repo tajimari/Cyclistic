@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>cyclistic_data_cleaned.py</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<style type="text/css">
+.s0 { color: #cc7832;}
+.s1 { color: #a9b7c6;}
+.s2 { color: #6a8759;}
+.s3 { color: #808080;}
+.s4 { color: #6897bb;}
+</style>
+</head>
+<body bgcolor="#2b2b2b">
+<table CELLSPACING=0 CELLPADDING=5 COLS=1 WIDTH="100%" BGCOLOR="#606060" >
+<tr><td><center>
+<font face="Arial, Helvetica" color="#000000">
+cyclistic_data_cleaned.py</font>
+</center></td></tr></table>
+<pre><span class="s0">import </span><span class="s1">numpy </span><span class="s0">as </span><span class="s1">np</span>
+<span class="s0">import </span><span class="s1">pandas </span><span class="s0">as </span><span class="s1">pd</span>
+<span class="s0">import </span><span class="s1">glob</span>
+
+<span class="s2">''' 
+    Data cleaning. 
+'''</span>
+<span class="s3"># Combining 12 sheet's worth of data into one</span>
+<span class="s1">df = pd.concat(map(pd.read_csv</span><span class="s0">, </span><span class="s1">glob.glob(</span><span class="s2">'/Users/riku.tajima/Desktop/cyclistic/data/*.csv'</span><span class="s1">)))</span>
+
+<span class="s3"># converting columns to datetime to allow for calculations to be made</span>
+<span class="s1">df[</span><span class="s2">'ended_at'</span><span class="s1">] = pd.to_datetime(df[</span><span class="s2">'ended_at'</span><span class="s1">])</span>
+<span class="s1">df[</span><span class="s2">'started_at'</span><span class="s1">] = pd.to_datetime(df[</span><span class="s2">'started_at'</span><span class="s1">])</span>
+
+<span class="s3"># adding columns to aid with data aggregation</span>
+<span class="s1">df[</span><span class="s2">'ride_duration'</span><span class="s1">] = (df[</span><span class="s2">'ended_at'</span><span class="s1">]-df[</span><span class="s2">'started_at'</span><span class="s1">]).dt.seconds</span>
+<span class="s1">df[</span><span class="s2">'day_of_week'</span><span class="s1">] = df[</span><span class="s2">'started_at'</span><span class="s1">].dt.day_name()</span>
+<span class="s1">df[</span><span class="s2">'hour'</span><span class="s1">] = df[</span><span class="s2">'started_at'</span><span class="s1">].dt.hour</span>
+<span class="s1">df[</span><span class="s2">'date'</span><span class="s1">] = df[</span><span class="s2">'started_at'</span><span class="s1">].dt.date</span>
+<span class="s1">df[</span><span class="s2">'month'</span><span class="s1">] = df[</span><span class="s2">'started_at'</span><span class="s1">].dt.month_name()</span>
+
+<span class="s3"># ordering dataframe by date</span>
+<span class="s1">df = df.sort_values(by=[</span><span class="s2">'date'</span><span class="s1">])</span>
+
+<span class="s3"># converting day_of_week to categorical type to order in chronological order</span>
+<span class="s1">wd_order = [</span><span class="s2">'Monday'</span><span class="s0">, </span><span class="s2">'Tuesday'</span><span class="s0">, </span><span class="s2">'Wednesday'</span><span class="s0">, </span><span class="s2">'Thursday'</span><span class="s0">, </span><span class="s2">'Friday'</span><span class="s0">, </span><span class="s2">'Saturday'</span><span class="s0">, </span><span class="s2">'Sunday'</span><span class="s1">]</span>
+<span class="s1">df[</span><span class="s2">'day_of_week'</span><span class="s1">] = pd.Categorical(df[</span><span class="s2">'day_of_week'</span><span class="s1">]</span><span class="s0">, </span><span class="s1">wd_order</span><span class="s0">, </span><span class="s1">ordered=</span><span class="s0">True</span><span class="s1">)</span>
+
+<span class="s3"># giving each start and end station a single unique coordinate</span>
+<span class="s1">df[</span><span class="s2">'clean_start_lat'</span><span class="s1">] = df.groupby(</span><span class="s2">'start_station_name'</span><span class="s1">)[</span><span class="s2">'start_lat'</span><span class="s1">].transform(</span><span class="s2">'mean'</span><span class="s1">).round(</span><span class="s4">4</span><span class="s1">)</span>
+<span class="s1">df[</span><span class="s2">'clean_start_lng'</span><span class="s1">] = df.groupby(</span><span class="s2">'start_station_name'</span><span class="s1">)[</span><span class="s2">'start_lng'</span><span class="s1">].transform(</span><span class="s2">'mean'</span><span class="s1">).round(</span><span class="s4">4</span><span class="s1">)</span>
+<span class="s1">df[</span><span class="s2">'clean_end_lat'</span><span class="s1">] = df.groupby(</span><span class="s2">'end_station_name'</span><span class="s1">)[</span><span class="s2">'end_lat'</span><span class="s1">].transform(</span><span class="s2">'mean'</span><span class="s1">).round(</span><span class="s4">4</span><span class="s1">)</span>
+<span class="s1">df[</span><span class="s2">'clean_end_lng'</span><span class="s1">] = df.groupby(</span><span class="s2">'end_station_name'</span><span class="s1">)[</span><span class="s2">'end_lng'</span><span class="s1">].transform(</span><span class="s2">'mean'</span><span class="s1">).round(</span><span class="s4">4</span><span class="s1">)</span>
+
+<span class="s3"># removing rows with ride durations less than 0 and over 6 hours to remove extremes</span>
+<span class="s1">df = df.loc[(df[</span><span class="s2">'ride_duration'</span><span class="s1">] &gt; </span><span class="s4">0</span><span class="s1">) &amp; (df[</span><span class="s2">'ride_duration'</span><span class="s1">] &lt; </span><span class="s4">21600</span><span class="s1">)]</span>
+
+<span class="s3"># removing rows with NULL values in any column</span>
+<span class="s1">df = df.dropna()</span>
+
+
+
+
+</pre>
+</body>
+</html>
